@@ -12,7 +12,7 @@ This does not require the device to be jailbroken.
 
 * Clone this repository
 
-#### ADD BY JAKOB
+#### ADDED BY JAKOB
 * clone jsmn into folder ./iOSVNCServer/vendor/:
 	* `git clone https://github.com/zserge/jsmn.git`
 	* `cd jsmn`
