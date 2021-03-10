@@ -12,17 +12,17 @@ This does not require the device to be jailbroken.
 
 * Clone this repository
 
-##### ADDED BY JAKOB
-* clone jsmn into folder ./iOSVNCServer/vendor/:
-	* `git clone https://github.com/zserge/jsmn.git`
-	* `cd jsmn`
-	* `make`
-
 * Install dependencies:
 	* `brew install libimobiledevice`
 	* `brew install libpng`
 	* `brew install libvncserver`
 	* `brew install carthage`
+	
+##### ADDED BY JAKOB
+* clone jsmn into folder ./iOSVNCServer/vendor/:
+	* `git clone https://github.com/zserge/jsmn.git`
+	* `cd jsmn`
+	* `make`
 
 * Now you can build the project:
 	* `cd iOSVNCServer && make build`
