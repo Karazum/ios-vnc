@@ -13,7 +13,7 @@ This does not require the device to be jailbroken.
 * Clone this repository
 
 #### ADD BY: JAKOB
-*clone jsmn in to vendor, then build.
+*clone jsmn in to vendor, then build:
 	* git clone https://github.com/zserge/jsmn.git
 	* cd jsmn
 	* make
