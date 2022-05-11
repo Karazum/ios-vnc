@@ -12,11 +12,17 @@ This does not require the device to be jailbroken.
 
 * Clone this repository
 
-* Install dependencies:
-	* `brew install libimobiledevice`
-	* `brew install libpng`
-	* `brew install libvncserver`
-	* `brew install carthage`
+* Install dependencies (mac):
+    * `brew install libimobiledevice`
+    * `brew install libpng`
+    * `brew install libvncserver`
+    * `brew install carthage`
+
+* Install dependecies (linux):
+  * `sudo apt install libimobiledevice-dev`
+  * `sudo apt install libpng-dev`
+  * `sudo apt install libvncserver-dev`
+  * `sudo apt install libcurl4-openssl-dev`
 	
 ##### ADDED BY JAKOB
 * clone jsmn into folder ./iOSVNCServer/vendor/:
@@ -24,8 +30,9 @@ This does not require the device to be jailbroken.
 	* `cd jsmn`
 	* `make`
 
-* Now you can build the project:
-	* `cd iOSVNCServer && make build`
+* Now you can build the project on:
+    * `cd iOSVNCServer && make build`
+
 
 ## Dependencies
 To control the device, you will need to set up [WebdriverAgent](https://github.com/appium/WebDriverAgent)
