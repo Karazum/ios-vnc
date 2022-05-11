@@ -175,7 +175,7 @@ int main(int argc, char **argv) {
         exit(-1);
     }
 
-    if (!(screenData->tapURL = createURL(HTTPHost, HTTPSessionID, "private/tap"))) {
+    if (!(screenData->tapURL = createURL(HTTPHost, HTTPSessionID, "actions"))) {
         fputs("ERROR: Cannot create a tap URL.\n", stderr);
         exit(-1);
     }
@@ -196,7 +196,7 @@ int main(int argc, char **argv) {
 
     pthread_t tid;
     pthread_create(&tid, NULL, &keyboardQueuer, screenData);
-    
+
     rfbInitServer(rfbScreen);
     rfbRunEventLoop(rfbScreen, -1, TRUE);
     while (rfbIsActive(rfbScreen)) {
@@ -375,19 +375,19 @@ static size_t curlCallback(void *contents, size_t size, size_t nmemb, void *user
 {
   size_t realsize = size * nmemb;
   struct MemoryStruct *mem = (struct MemoryStruct *)userp;
- 
+
   char *ptr = realloc(mem->memory, mem->size + realsize + 1);
   if (ptr == NULL) {
-    /* out of memory! */ 
+    /* out of memory! */
     printf("not enough memory (realloc returned NULL)\n");
     return 0;
   }
- 
+
   mem->memory = ptr;
   memcpy(&(mem->memory[mem->size]), contents, realsize);
   mem->size += realsize;
   mem->memory[mem->size] = 0;
- 
+
   return realsize;
 }
 
@@ -404,9 +404,9 @@ static void *doDrag(void *args) {
     char errbuf[CURL_ERROR_SIZE];
 
     struct MemoryStruct chunk;
- 
-    chunk.memory = malloc(1);  /* will be grown as needed by the realloc above */ 
-    chunk.size = 0;    /* no data at this point */ 
+
+    chunk.memory = malloc(1);  /* will be grown as needed by the realloc above */
+    chunk.size = 0;    /* no data at this point */
 
     char json[46 + 4 + 4 + 4 + 4 + 1];
     if (curl_easy_setopt(curlHandle, CURLOPT_URL, url) != CURLE_OK) {
@@ -511,15 +511,15 @@ static void *doTap(void *args)
     int x = data->x;
     int y = data->y;
     CURL *curlHandle;
-    char json[11 + 4 + 4 + 1];
+    char json[231];
     curlHandle = curl_easy_init();
     CURLcode res;
     char errbuf[CURL_ERROR_SIZE];
 
     struct MemoryStruct chunk;
- 
-    chunk.memory = malloc(1);  /* will be grown as needed by the realloc above */ 
-    chunk.size = 0;    /* no data at this point */ 
+
+    chunk.memory = malloc(1);  /* will be grown as needed by the realloc above */
+    chunk.size = 0;    /* no data at this point */
 
     if (curl_easy_setopt(curlHandle, CURLOPT_URL, url) != CURLE_OK) {
         fputs("ERROR: Cannot set an URL.\n", stderr);
@@ -531,7 +531,7 @@ static void *doTap(void *args)
 
     fprintf(stdout, "{\"x\":%d,\"y\":%d}", SCALE(x), SCALE(y));
 
-    if (sprintf(json, "{\"x\":%d,\"y\":%d}", SCALE(x), SCALE(y)) < 0) {
+    if (sprintf(json, "{\"actions\":[{\"type\":\"pointer\",\"id\":\"finger1\",\"actions\":[{\"type\":\"pointerMove\",\"duration\":0,\"x\":%d,\"y\":%d,\"origin\":\"viewport\"},{\"type\":\"pointerDown\",\"button\":0},{\"type\":\"pointerUp\",\"button\":0}],\"parameters\":{\"pointerType\":\"touch\"}}]}", SCALE(x), SCALE(y)) < 0) {
         fputs("ERROR: Cannot create JSON.\n", stderr);
     }
     if (curl_easy_setopt(curlHandle, CURLOPT_POSTFIELDS, json) != CURLE_OK) {
@@ -575,10 +575,10 @@ static void *keyboardQueuer(void *args)
         usleep(300000);
         charLen = strlen(keyboardChars);
         if (charLen > 0) {
-            
+
             curlHandle = curl_easy_init();
             fprintf(stderr, "Waiting... %s\n", keyboardChars);
-            
+
             if (curl_easy_setopt(curlHandle, CURLOPT_URL, screenData->keyURL) != CURLE_OK) {
                 fputs("ERROR: Cannot set an URL.\n", stderr);
             }
@@ -586,20 +586,20 @@ static void *keyboardQueuer(void *args)
             if (sprintf(json, "{\"value\":[\"%s\"]}", keyboardChars) < 0) {
                 fputs("ERROR: Cannot create JSON.\n", stderr);
             }
-            
+
             if (curl_easy_setopt(curlHandle, CURLOPT_HTTPHEADER, curl_slist_append(NULL, "Content-Type: application/json")) != CURLE_OK) {
                 fputs("ERROR: Cannot set HTTP headers.\n", stderr);
             }
             if (curl_easy_setopt(curlHandle, CURLOPT_PORT, screenData->httpPort) != CURLE_OK) {
                 fputs("ERROR: Cannot set a port.\n", stderr);
             }
-            
+
             if (curl_easy_setopt(curlHandle, CURLOPT_POSTFIELDS, json) != CURLE_OK) {
                 fputs("ERROR: Cannot set JSON.\n", stderr);
             }
             CURLcode res;
             res = curl_easy_perform(curlHandle);
-            
+
             if (res != CURLE_OK) {
                 fprintf(stderr, "%s", curl_easy_strerror(res));
                 fputs("ERROR: Cannot send a request.\n", stderr);
@@ -610,7 +610,7 @@ static void *keyboardQueuer(void *args)
                 int charsize = (strlen(keyboardChars) + charLen)+1;
                 char substr[charsize];
                 strncpy(substr, keyboardChars + charLen, len);
-                
+
                 substr[len] = '\0';
                 memset(&keyboardChars[0], 0, sizeof(keyboardChars));
                 strncpy(keyboardChars, substr, strlen(substr));
@@ -622,7 +622,7 @@ static void *keyboardQueuer(void *args)
             json[0] = '\0';
         }
     }
-    
+
     curl_easy_cleanup(curlHandle);
 }
 
